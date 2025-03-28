@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/discodeit
+    username: discodeit_prod_user
+    password: discodeit_prod_1234
+  jpa:
+    hibernate:
+      ddl-auto: validate
+server:
+  port: 8081
+
+logging:
+  level:
+    org.hibernate.SQL: info
+    org.hibernate.orm.jdbc.bind: trace

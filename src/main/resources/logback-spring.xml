@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+  <!-- 로그 패턴 정의 -->
+  <property name="LOG_PATTERN" value="%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %-36logger - %msg%n" />
+  <property name="LOG_PATH" value=".logs" />
+  <property name="LOG_FILE" value="${LOG_PATH}/app.log" />
+
+  <!-- 콘솔 출력 -->
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <!-- 파일 출력 + 일자별 롤링 + 30일 보관 -->
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE}</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 일자별 파일 이름 -->
+      <fileNamePattern>${LOG_PATH}/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <!-- 30일간 보관 -->
+      <maxHistory>30</maxHistory>
+      <!-- 로그 파일 총 용량 제한 제거 (필요 시 <totalSizeCap> 설정 가능) -->
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <!-- 루트 로그 설정 (콘솔 + 파일 동시에 출력) -->
+  <root level="INFO">
+    <appender-ref ref="Console"/>
+    <appender-ref ref="RollingFile"/>
+  </root>
+
+</configuration>
