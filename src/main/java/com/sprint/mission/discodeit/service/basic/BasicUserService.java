@@ -128,10 +128,11 @@ public class BasicUserService implements UserService {
   @Transactional
   @Override
   public void delete(UUID userId) {
-    if (userRepository.existsById(userId)) {
-      throw new UserNotFoundException(userId);
+    Optional<User> targetUser = userRepository.findById(userId);
+    if (targetUser.isPresent()) {
+      userRepository.deleteById(userId);
+      return;
     }
-
-    userRepository.deleteById(userId);
+    throw new UserNotFoundException(userId);
   }
 }
