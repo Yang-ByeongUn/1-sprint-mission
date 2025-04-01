@@ -12,11 +12,13 @@ public interface UserStatusService {
 
   UserStatusDto find(UUID userStatusId);
 
+  UserStatusDto findByUserId(UUID userId);
+
   List<UserStatusDto> findAll();
 
   UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest request);
 
   UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request);
 
-  void delete(UUID userStatusId);
+  //void delete(UUID userStatusId);
 }

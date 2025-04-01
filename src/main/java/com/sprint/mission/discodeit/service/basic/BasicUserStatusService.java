@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import static java.util.stream.Collectors.toList;
+
 import com.sprint.mission.discodeit.dto.data.UserStatusDto;
 import com.sprint.mission.discodeit.dto.request.UserStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
@@ -14,7 +16,6 @@ import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import java.time.Instant;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,15 @@ public class BasicUserStatusService implements UserStatusService {
             //() -> new NoSuchElementException("UserStatus with id " + userStatusId + " not found"));
             () -> new UserStatusNotFoundException(userStatusId));
   }
+  @Override
+  public UserStatusDto findByUserId(UUID userId) {
+    UserStatus userStatus = userStatusRepository.findAll().stream().filter(s -> s.getUser().getId().equals(userId))
+        .findAny().orElseThrow(
+            () -> new UserNotFoundException(userId)
+        );
+
+    return userStatusMapper.toDto(userStatus);
+  }
 
   @Override
   public List<UserStatusDto> findAll() {
@@ -92,12 +102,15 @@ public class BasicUserStatusService implements UserStatusService {
     return userStatusMapper.toDto(userStatus);
   }
 
-  @Transactional
+  /*@Transactional
   @Override
   public void delete(UUID userStatusId) {
-    if (!userStatusRepository.existsById(userStatusId)) {
-      throw new UserStatusNotFoundException(userStatusId);
+    Optional<UserStatus> targetUserStatus = userStatusRepository.findById(userStatusId);
+    if (!targetUserStatus.isEmpty()) {
+      userStatusRepository.deleteById(targetUserStatus.get().getId());
+      return;
     }
-    userStatusRepository.deleteById(userStatusId);
-  }
+    throw new UserStatusNotFoundException(userStatusId);
+
+  }*/
 }
