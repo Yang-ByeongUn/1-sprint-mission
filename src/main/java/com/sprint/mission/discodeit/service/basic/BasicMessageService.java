@@ -9,6 +9,9 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.message.MessageNotFoundException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -50,10 +53,12 @@ public class BasicMessageService implements MessageService {
 
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(
-            () -> new NoSuchElementException("Channel with id " + channelId + " does not exist"));
+            //() -> new NoSuchElementException("Channel with id " + channelId + " does not exist"));
+            () -> new ChannelNotFoundException(channelId));
     User author = userRepository.findById(authorId)
         .orElseThrow(
-            () -> new NoSuchElementException("Author with id " + authorId + " does not exist")
+            //() -> new NoSuchElementException("Author with id " + authorId + " does not exist")
+            () -> new UserNotFoundException(authorId)
         );
 
     List<BinaryContent> attachments = binaryContentCreateRequests.stream()
@@ -88,7 +93,8 @@ public class BasicMessageService implements MessageService {
     return messageRepository.findById(messageId)
         .map(messageMapper::toDto)
         .orElseThrow(
-            () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+            //() -> new NoSuchElementException("Message with id " + messageId + " not found"));
+            () -> new MessageNotFoundException(messageId));
   }
 
   @Transactional(readOnly = true)
@@ -115,7 +121,7 @@ public class BasicMessageService implements MessageService {
     String newContent = request.newContent();
     Message message = messageRepository.findById(messageId)
         .orElseThrow(
-            () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+            () -> new MessageNotFoundException(messageId));
     message.update(newContent);
     return messageMapper.toDto(message);
   }
@@ -124,7 +130,7 @@ public class BasicMessageService implements MessageService {
   @Override
   public void delete(UUID messageId) {
     if (!messageRepository.existsById(messageId)) {
-      throw new NoSuchElementException("Message with id " + messageId + " not found");
+      throw new MessageNotFoundException(messageId);
     }
 
     messageRepository.deleteById(messageId);
