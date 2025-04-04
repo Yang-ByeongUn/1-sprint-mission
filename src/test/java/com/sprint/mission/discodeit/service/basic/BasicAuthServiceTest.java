@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.dto.request.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@Transactional
 class BasicAuthServiceTest {
 
   @Mock
