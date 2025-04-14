@@ -38,9 +38,9 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto create(PublicChannelCreateRequest request) {
     String name = request.name();
     String description = request.description();
-    List<Channel> findByName = channelRepository.findByName(name);
+    List<Channel> findByName = channelRepository.findAllByName(name);
     if (!findByName.isEmpty()) {
-      List<Channel> byName = channelRepository.findByName(name);
+      List<Channel> byName = channelRepository.findAllByName(name);
       System.out.println("byName = " + byName);
       throw new DuplicatedChannelNameException(name);
     }

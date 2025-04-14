@@ -10,7 +10,7 @@ spring:
     password: discodeit_dev_1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update #스프린트 미션 7 코드리뷰 : 프로파일 옵션 dev라서 update로 지정했는데 틀린 걸까요?
 server:
   port: 8080
 
