@@ -1,10 +1,32 @@
-# Build Stage
+# --- Build Stage ---
 FROM amazoncorretto:17 AS builder
+
 WORKDIR /app
 
-#먼저 gradle 파일만 복사하여 의존성 레이어 캐싱
-COPY build.gradle settings.gradle gradlew ./
-COPY gradle ./gradle
-COPY src ./src
+# Gradle 관련 파일 먼저 복사하여 의존성 캐시 활용
+COPY gradlew .
+COPY gradle/ gradle/
+COPY build.gradle settings.gradle ./
+COPY src/ src/
 
-ENTRYPOINT ["gradle","build","-t","temp","."]
+
+# 실행 권한 부여
+RUN chmod +x gradlew
+
+# 의존성 캐싱
+RUN ./gradlew build --no-daemon -x test
+
+# 최종 빌드
+RUN ./gradlew clean build --no-daemon -x test
+
+
+# --- Run Stage ---
+FROM amazoncorretto:17-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

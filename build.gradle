@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.0'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'jacoco'
+    //id 'jacoco'
 }
 
 group = 'com.sprint.mission'
@@ -30,7 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    //implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     runtimeOnly 'org.postgresql:postgresql'
 
@@ -42,10 +42,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation 'de.codecentric:spring-boot-admin-starter-client:3.4.5'
+    //implementation 'de.codecentric:spring-boot-admin-starter-client:3.4.5'
 }
 
-jacocoTestReport {
+/*jacocoTestReport {
     dependsOn test
     reports {
         xml.required = true
@@ -59,7 +59,7 @@ jacoco {
 }
 test {
     finalizedBy jacocoTestReport
-}
+}*/
 
 tasks.named('test') {
     useJUnitPlatform()
