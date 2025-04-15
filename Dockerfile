@@ -25,8 +25,14 @@ FROM amazoncorretto:17-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+ENV PROJECT_VERSION=1.2-M8
+ENV PROJECT_NAME=discodeit
+ENV SPRING_PROFILE=prod
+ENV JVM_OPTS=""
+
+COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["sh", "-c", "java $JVM_OPTS -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar /app/app.jar"]
