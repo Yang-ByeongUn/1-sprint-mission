@@ -1,3 +1,4 @@
+/*
 package com.sprint.mission.discodeit.config;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,3 +41,4 @@ public class MDCLoggingInterceptor implements HandlerInterceptor {
     HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
   }
 }
+*/

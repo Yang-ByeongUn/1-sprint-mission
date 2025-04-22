@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -49,11 +50,8 @@ public class MessageController implements MessageApi {
         .map(files -> files.stream()
             .map(file -> {
               try {
-                return new BinaryContentCreateRequest(
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    file.getBytes()
-                );
+                //return new BinaryContentCreateRequest(file.getOriginalFilename(), file.getContentType(), file.getBytes()); //스프린트 미션 7 코드리뷰
+                return BinaryContentCreateRequest.create(file);
               } catch (IOException e) {
                 throw new RuntimeException(e);
               }

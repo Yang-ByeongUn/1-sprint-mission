@@ -1,3 +1,4 @@
+/*
 package com.sprint.mission.discodeit.config;
 
 import lombok.RequiredArgsConstructor;
@@ -14,3 +15,4 @@ public class WebMvcConfig  implements WebMvcConfigurer {
     registry.addInterceptor(mdcLoggingInterceptor).addPathPatterns("/**");
   }
 }
+*/

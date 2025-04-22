@@ -1,3 +1,4 @@
+/*
 package com.sprint.mission.discodeit.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -22,4 +23,4 @@ public class SwaggerConfig {
             new Server().url("http://localhost:8080").description("로컬 서버")
         ));
   }
-}
+}*/
