@@ -15,4 +15,4 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Auth", description = "인증 API")
 public interface AuthApi {
 
-} 
+}

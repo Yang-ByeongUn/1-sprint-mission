@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.exception.ErrorResponse;
 import com.sprint.mission.discodeit.exception.user.LoginFailException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
