@@ -38,14 +38,4 @@ public class Channel extends BaseUpdatableEntity {
       this.description = newDescription;
     }
   }
-
-  @Override
-  public String toString() {
-    return "Channel{" +
-        "id= " + getId() +
-        "type=" + type +
-        ", name='" + name + '\'' +
-        ", description='" + description + '\'' +
-        '}';
-  }
 }

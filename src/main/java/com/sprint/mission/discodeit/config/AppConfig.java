@@ -1,4 +1,3 @@
-/*
 package com.sprint.mission.discodeit.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -8,4 +7,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class AppConfig {
 
-}*/
+}

@@ -36,7 +36,7 @@ public abstract class ChannelMapper {
 
   protected List<UserDto> resolveParticipants(Channel channel) {
     List<UserDto> participants = new ArrayList<>();
-    if (ChannelType.PRIVATE.equals(channel.getType())) { //스프린트 미션 7 코드 리뷰 : 변수.equals(상수) -> 상수.equals(변수)
+    if (channel.getType().equals(ChannelType.PRIVATE)) {
       readStatusRepository.findAllByChannelIdWithUser(channel.getId())
           .stream()
           .map(ReadStatus::getUser)

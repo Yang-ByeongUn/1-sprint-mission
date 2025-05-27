@@ -1,52 +1,26 @@
+server:
+  port: 8080
+
 spring:
-  boot:
-    admin:
-      client:
-        url: http://localhost:9090
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/discodeit
     username: discodeit_dev_user
-    password: discodeit_dev_1234
+    password: discodeit1234
   jpa:
-    hibernate:
-      ddl-auto: update #스프린트 미션 7 코드리뷰 : 프로파일 옵션 dev라서 update로 지정했는데 틀린 걸까요?
-server:
-  port: 8081
-
+    properties:
+      hibernate:
+        format_sql: true
 
 logging:
   level:
+    com.sprint.mission.discodeit: debug
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
 
-info:
-  app:
-    name: Discodeit
-    version: 1.7.0
-    java-version: 17
-    spring-boot-version: 3.4.0
-  datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    ddl-auto: update
-  storage:
-    type: local
-    path: /data/dev-storage
-  multipart:
-    max-file-size: 10MB
-    max-request-size: 20MB
-
-
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info, metrics, prometheus, env  # 필요한 엔드포인트 명시
   endpoint:
     health:
-      show-details: always  # 헬스체크에 자세한 정보 출력
+      show-details: always
   info:
     env:
-      enabled: true  # info 엔드포인트에 info.* 정보 포함
+      enabled: true
