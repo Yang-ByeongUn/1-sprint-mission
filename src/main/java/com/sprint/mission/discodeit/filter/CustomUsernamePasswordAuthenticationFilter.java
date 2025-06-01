@@ -21,9 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
   private final SessionRegistry sessionRegistry;
+  private final ObjectMapper objectMapper;
 
-  public CustomUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager,
-      SessionRegistry sessionRegistry) {
+  public CustomUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager, SessionRegistry sessionRegistry,
+      ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
     super.setAuthenticationManager(authenticationManager);
     this.sessionRegistry = sessionRegistry;
     setFilterProcessesUrl("/api/auth/login");
@@ -31,8 +33,10 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     try {
-      LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
+      LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
       UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
+      //로그인 요청을 추적하거나 인증 흐름을 확장하려는 경우
+      setDetails(request, authRequest);
       return this.getAuthenticationManager().authenticate(authRequest);
 
     } catch (IOException e) {
@@ -51,7 +55,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     sessionRegistry.register(user.getId(), request.getSession(false));
 
     response.setContentType("application/json");
-    new ObjectMapper().writeValue(response.getOutputStream(), dto);
+    objectMapper.writeValue(response.getOutputStream(), dto);
   }
   @Override
   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
@@ -60,6 +64,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     response.setContentType("application/json");
 
     LoginFailException error = new LoginFailException();
-    new ObjectMapper().writeValue(response.getOutputStream(), error);
+    objectMapper.writeValue(response.getOutputStream(), error);
   }
 }

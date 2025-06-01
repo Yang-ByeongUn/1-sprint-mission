@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.RoleRepository;
@@ -7,6 +8,7 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -1,15 +1,20 @@
 package com.sprint.mission.discodeit.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.filter.CustomLogoutFilter;
 import com.sprint.mission.discodeit.filter.CustomUsernamePasswordAuthenticationFilter;
+import com.sprint.mission.discodeit.filter.JwtAuthenticationFilter;
 import com.sprint.mission.discodeit.handler.CustomAuthenticationFailureHandler;
 import com.sprint.mission.discodeit.handler.CustomAuthenticationSuccessHandler;
+import com.sprint.mission.discodeit.security.jwt.JwtSessionService;
 import com.sprint.mission.discodeit.session.SessionRegistry;
+import java.util.List;
 import javax.sql.DataSource;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyAuthoritiesMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,6 +39,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 
 @Configuration
@@ -43,6 +50,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 public class SecurityConfig {
   private final UserDetailsService userDetailsService;
   private final DataSource dataSource;
+  private final JwtSessionService jwtSessionService;
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http,
@@ -51,24 +59,44 @@ public class SecurityConfig {
       SessionRegistry sessionRegistry) throws Exception {
 
     CustomUsernamePasswordAuthenticationFilter loginFilter =
-        new CustomUsernamePasswordAuthenticationFilter(authManager, sessionRegistry);
+        new CustomUsernamePasswordAuthenticationFilter(authManager, sessionRegistry, objectMapper());
     loginFilter.setSecurityContextRepository(contextRepo);
+
+    //AntPathRequestMatcher 키워드
+    List<RequestMatcher> publicMatchers = List.of(
+        new AntPathRequestMatcher("/api/auth/csrf-token", HttpMethod.GET.name()),
+        new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
+        new AntPathRequestMatcher("/api/users", HttpMethod.POST.name())
+    );
+
+    List<RequestMatcher> adminMatchers = List.of(
+        new AntPathRequestMatcher("/api/users/role", HttpMethod.PUT.name())
+    );
+
+    List<RequestMatcher> channelManagerMatchers = List.of(
+        new AntPathRequestMatcher("/api/channels/public/**", HttpMethod.POST.name()),
+        new AntPathRequestMatcher("/api/channels/public/**", HttpMethod.PUT.name()),
+        new AntPathRequestMatcher("/api/channels/public/**", HttpMethod.DELETE.name())
+    );
+
+    RequestMatcher userMatcher = new AntPathRequestMatcher("/api/**");
 
     http
         .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/csrf-token", "/api/auth/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-            .requestMatchers(HttpMethod.PUT, "/api/users/role").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.POST, "/api/channels/public/**").hasRole("CHANNEL_MANAGER")
-            .requestMatchers(HttpMethod.PUT, "/api/channels/public/**").hasRole("CHANNEL_MANAGER")
-            .requestMatchers(HttpMethod.DELETE, "/api/channels/public/**").hasRole("CHANNEL_MANAGER")
-            .requestMatchers("/api/**").hasRole("USER")
-            .anyRequest().permitAll()
-        )
+        .authorizeHttpRequests(auth -> {
+          publicMatchers.forEach(matcher -> auth.requestMatchers(matcher).permitAll());
+          adminMatchers.forEach(matcher -> auth.requestMatchers(matcher).hasRole("ADMIN"));
+          channelManagerMatchers.forEach(matcher -> auth.requestMatchers(matcher).hasRole("CHANNEL_MANAGER"));
+          auth.requestMatchers(userMatcher).hasRole("USER");
+          auth.anyRequest().permitAll();
+        })
+
         .formLogin(AbstractHttpConfigurer::disable)
         .logout(AbstractHttpConfigurer::disable)
         .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+    http.addFilterBefore(new JwtAuthenticationFilter(jwtSessionService),
+        UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -94,6 +122,8 @@ public class SecurityConfig {
   public AuthenticationManager authenticationManager() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setUserDetailsService(userDetailsService);
+    //Security 인증 시 롤 계층 구조가 적용
+    provider.setAuthoritiesMapper(new RoleHierarchyAuthoritiesMapper(roleHierarchy()));
     provider.setPasswordEncoder(passwordEncoder());
     return new ProviderManager(provider);
   }
@@ -134,10 +164,15 @@ public class SecurityConfig {
   @Bean
   public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager,
       SessionRegistry sessionRegistry) {
-    CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(authenticationManager, sessionRegistry);
+    CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(authenticationManager, sessionRegistry, objectMapper());
     filter.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
     filter.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
     return filter;
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper(); // 필요 시 커스터마이징 추가
   }
 
 
