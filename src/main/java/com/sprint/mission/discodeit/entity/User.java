@@ -55,7 +55,7 @@ public class User extends BaseUpdatableEntity {
   }
 
   public void update(String newUsername, String newEmail, String newPassword,
-      BinaryContent newProfile) {
+      BinaryContent newProfile, Set<Role> newRole) {
     if (newUsername != null && !newUsername.equals(this.username)) {
       this.username = newUsername;
     }
@@ -67,6 +67,10 @@ public class User extends BaseUpdatableEntity {
     }
     if (newProfile != null) {
       this.profile = newProfile;
+    }
+    if (newRole != null) {
+      this.roles = new HashSet<>();
+      this.roles.addAll(newRole);
     }
   }
 }

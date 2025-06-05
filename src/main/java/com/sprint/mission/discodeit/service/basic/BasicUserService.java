@@ -17,6 +17,8 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.RoleRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.security.jwt.JwtSession;
+import com.sprint.mission.discodeit.security.jwt.JwtSessionRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.time.Instant;
@@ -39,10 +41,12 @@ public class BasicUserService implements UserService {
 
   private final UserRepository userRepository;
   private final UserStatusRepository userStatusRepository;
+  private final JwtSessionRepository jwtSessionRepository;
   private final UserMapper userMapper;
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional
   @Override
@@ -126,6 +130,7 @@ public class BasicUserService implements UserService {
 
     String newUsername = userUpdateRequest.newUsername();
     String newEmail = userUpdateRequest.newEmail();
+    Set<Role> roles = userUpdateRequest.roles();
 
     if (userRepository.existsByEmail(newEmail)) {
       throw UserAlreadyExistsException.withEmail(newEmail);
@@ -150,7 +155,8 @@ public class BasicUserService implements UserService {
         .orElse(null);
 
     String newPassword = userUpdateRequest.newPassword();
-    user.update(newUsername, newEmail, newPassword, nullableProfile);
+    //비밀번호 업데이트 시에도 PasswordEncoder을 통한 암호화
+    user.update(newUsername, newEmail, passwordEncoder.encode(newPassword), nullableProfile, roles);
 
     log.info("사용자 수정 완료: id={}", userId);
     return userMapper.toDto(user);
@@ -176,8 +182,13 @@ public class BasicUserService implements UserService {
     Role role = roleRepository.findByName(newRole.getName()).orElseThrow(()->RoleNotFoundException.notFoundException(newRole.getName()));
     Set<Role> newRoles = Set.of(role);
     user.setRoles(newRoles); // 기존 권한 덮어쓰기
-
     userRepository.save(user);
+
+    List<JwtSession> sessions = jwtSessionRepository.findAllByUserId(userId);
+    jwtSessionRepository.deleteAll(sessions);
+    log.info("로그인 세션 무효화 완료: sessionCount={}", sessions.size());
+
+
     return userMapper.toDto(user);
   }
 }
