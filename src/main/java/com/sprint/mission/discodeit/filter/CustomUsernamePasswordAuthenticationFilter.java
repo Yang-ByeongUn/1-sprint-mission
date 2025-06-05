@@ -26,6 +26,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
   public CustomUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager, SessionRegistry sessionRegistry,
       ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+
     super.setAuthenticationManager(authenticationManager);
     this.sessionRegistry = sessionRegistry;
     setFilterProcessesUrl("/api/auth/login");
@@ -37,6 +38,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
       UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
       //로그인 요청을 추적하거나 인증 흐름을 확장하려는 경우
       setDetails(request, authRequest);
+
       return this.getAuthenticationManager().authenticate(authRequest);
 
     } catch (IOException e) {
@@ -56,6 +58,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     response.setContentType("application/json");
     objectMapper.writeValue(response.getOutputStream(), dto);
+
   }
   @Override
   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
@@ -65,5 +68,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     LoginFailException error = new LoginFailException();
     objectMapper.writeValue(response.getOutputStream(), error);
+
   }
 }

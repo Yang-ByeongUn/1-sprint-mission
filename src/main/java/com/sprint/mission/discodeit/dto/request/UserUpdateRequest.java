@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.Set;
 
+
 public record UserUpdateRequest(
     @Size(min = 3, max = 50, message = "사용자 이름은 3자 이상 50자 이하여야 합니다")
     String newUsername,
@@ -20,6 +21,7 @@ public record UserUpdateRequest(
     String newPassword,
 
     Set<Role> roles
+
 ) {
 
 }

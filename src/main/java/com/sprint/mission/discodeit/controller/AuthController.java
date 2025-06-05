@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.CookieValue;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,6 +68,7 @@ public class AuthController implements AuthApi {
   public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response,
       @CookieValue(value = "refresh_token", required = false) String refreshToken) {
     if (refreshToken == null || !jwtSessionService.isValid(refreshToken)) {
+
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     HttpSession session = request.getSession(false);
@@ -81,6 +83,7 @@ public class AuthController implements AuthApi {
     response.addCookie(deleteCookie);
     return ResponseEntity.ok().build();
   }
+
 
   @PutMapping("/role")
   public ResponseEntity<UserDto> roleUpdate(@RequestBody UserRoleUpdateRequest request) {
@@ -130,7 +133,6 @@ public class AuthController implements AuthApi {
     refreshTokenCookie.setMaxAge(jwtSessionService.getRefreshTokenExpirySeconds());
     response.addCookie(refreshTokenCookie);
     return ResponseEntity.ok(newAccessToken);
-
 
   }
 }

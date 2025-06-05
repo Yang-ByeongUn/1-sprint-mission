@@ -47,6 +47,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentStorage binaryContentStorage;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
+
   @Transactional
   @Override
   public UserDto create(UserCreateRequest userCreateRequest,
@@ -130,6 +131,7 @@ public class BasicUserService implements UserService {
     String newUsername = userUpdateRequest.newUsername();
     String newEmail = userUpdateRequest.newEmail();
     Set<Role> roles = userUpdateRequest.roles();
+
     if (userRepository.existsByEmail(newEmail)) {
       throw UserAlreadyExistsException.withEmail(newEmail);
     }
@@ -185,6 +187,7 @@ public class BasicUserService implements UserService {
     List<JwtSession> sessions = jwtSessionRepository.findAllByUserId(userId);
     jwtSessionRepository.deleteAll(sessions);
     log.info("로그인 세션 무효화 완료: sessionCount={}", sessions.size());
+
 
     return userMapper.toDto(user);
   }

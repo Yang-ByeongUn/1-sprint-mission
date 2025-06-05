@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyAuthoritiesMapper;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -43,6 +44,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 
+
 @Configuration
 @EnableWebSecurity //  Spring Security를 활성화하며, 내부적으로 WebSecurityConfigurerAdapter 없이도 커스터마이징이 가능하게 설정합니다.
 @AllArgsConstructor
@@ -51,6 +53,7 @@ public class SecurityConfig {
   private final UserDetailsService userDetailsService;
   private final DataSource dataSource;
   private final JwtSessionService jwtSessionService;
+
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http,
@@ -91,12 +94,14 @@ public class SecurityConfig {
           auth.anyRequest().permitAll();
         })
 
+
         .formLogin(AbstractHttpConfigurer::disable)
         .logout(AbstractHttpConfigurer::disable)
         .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
     http.addFilterBefore(new JwtAuthenticationFilter(jwtSessionService),
         UsernamePasswordAuthenticationFilter.class);
+
 
     return http.build();
   }
@@ -165,6 +170,7 @@ public class SecurityConfig {
   public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager,
       SessionRegistry sessionRegistry) {
     CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(authenticationManager, sessionRegistry, objectMapper());
+
     filter.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
     filter.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
     return filter;
@@ -172,7 +178,7 @@ public class SecurityConfig {
 
   @Bean
   public ObjectMapper objectMapper() {
-    return new ObjectMapper(); // 필요 시 커스터마이징 추가
+    return new ObjectMapper();
   }
 
 
