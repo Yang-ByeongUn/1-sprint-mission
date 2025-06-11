@@ -14,15 +14,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @RequiredArgsConstructor
 public class DiscodeitUserDetails implements UserDetails {
-  private final UUID id;
   private final UserDto userDto;
   private final String password;
+
+  public UUID getId() {
+    return userDto.id();
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority("ROLE_".concat(userDto.role().name())));
   }
-
 
   @Override
   public String getPassword() {

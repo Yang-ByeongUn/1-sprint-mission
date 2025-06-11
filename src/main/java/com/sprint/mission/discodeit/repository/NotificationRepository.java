@@ -9,5 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
 
-  boolean existsByReceiverAndTargetIdAndType(User user, UUID id, NotificationType notificationType);
+  boolean existsByReceiverIdAndTargetIdAndType(User user, UUID id, NotificationType notificationType);
 }

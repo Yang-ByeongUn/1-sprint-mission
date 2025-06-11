@@ -44,7 +44,7 @@ public class BasicNotificationService implements NotificationService {
       if (channel.getUpdatedAt().isAfter(readStatus.getUpdatedAt())) {
 
         // 중복 저장 방지 예시
-        boolean exists = notificationRepository.existsByReceiverAndTargetIdAndType(
+        boolean exists = notificationRepository.existsByReceiverIdAndTargetIdAndType(
             user, channel.getId(), NotificationType.NEW_MESSAGE);
         if (exists) continue;
 
